@@ -8,9 +8,9 @@ const userSchema = new mongoose.Schema({
 
 // Blog Schema
 const blogSchema = new mongoose.Schema({
-  title: String,
-  content: String,
-  //author: String ,required:false
+  title: { type: String, required: true },
+  content: { type: String, required: true },
+  author: { type: String, required: true }
 });
 
 // Export the models
@@ -18,5 +18,3 @@ const User = mongoose.model('Users', userSchema);
 const Blog = mongoose.model('Blogs', blogSchema);
 
 module.exports = { User, Blog };
-
-

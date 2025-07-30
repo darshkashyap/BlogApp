@@ -80,12 +80,12 @@ app.post('/signin', async (req, res) => {
 });
 
 // BLOG ROUTES
-app.post('/create', async (req, res) => {
+app.post('/create', checkuserlogin, async (req, res) => {
   try {
     const blog = new Blog({
       title: req.body.title,
       content: req.body.content,
-      // author: req.user?.username // add this if using auth
+      author: req.user.username 
     });
 
     await blog.save();
@@ -101,12 +101,22 @@ app.get('/blogs', async (req, res) => {
   res.json(blogs);
 });
 
-app.get('/blogs/:id', async (req, res) => {
+app.get('/myblogs', checkuserlogin, async (req, res) => {
+  try {
+    const blogs = await Blog.find({ author: req.user.username });
+    res.json(blogs);
+  } catch (err) {
+    console.error("Error fetching user blogs:", err);
+    res.status(500).send("Server error");
+  }
+});
+
+app.get('/blogs/:id', checkuserlogin, async (req, res) => {
   const blog = await Blog.findById(req.params.id);
   res.json(blog);
 });
 
-app.put('/blogs/:id', async (req, res) => {
+app.put('/blogs/:id', checkuserlogin, async (req, res) => {
   await Blog.findByIdAndUpdate(req.params.id, {
     title: req.body.title,
     content: req.body.content
@@ -114,7 +124,7 @@ app.put('/blogs/:id', async (req, res) => {
   res.send("Blog updated");
 });
 
-app.delete('/blogs/:id', async (req, res) => {
+app.delete('/blogs/:id', checkuserlogin, async (req, res) => {
   await Blog.findByIdAndDelete(req.params.id);
   res.send("Blog deleted");
 });
